@@ -1,52 +1,67 @@
+version: '3.8'
+
 services:
+  frontend1:
+    build: ./mern/frontend
+    networks:
+      - mern_network
+    environment:
+      REACT_APP_API_URL: http://backend:5050
+    depends_on:
+      - backend
+
+  frontend2:
+    build: ./mern/frontend
+    networks:
+      - mern_network
+    environment:
+      REACT_APP_API_URL: http://backend:5050
+    depends_on:
+      - backend
+
+  backend1:
+    build: ./mern/backend
+    networks:
+      - mern_network
+    environment:
+      MONGO_URI: mongodb://mongo:27017/mydatabase
+    depends_on:
+      - mongodb
+
+  backend2:
+    build: ./mern/backend
+    networks:
+      - mern_network
+    environment:
+      MONGO_URI: mongodb://mongo:27017/mydatabase
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - mern_network
+    volumes:
+      - mongo-data:/data/db
 
   nginx:
     build: ./mern/nginx  # Build from the Dockerfile in ./nginx directory
     ports:
-      - "80:80"  # Expose port 80 for Nginx reverse proxy
+      - "80:80"
     networks:
       - mern_network
     depends_on:
-      - frontend
-      - backend
-
-  backend:
-    build: ./mern/backend
-    ports:
-      - "5050:5050" 
-    networks:
-      - mern_network
-    environment:
-      MONGO_URI: mongodb://mongo:27018/mydatabase  
-    depends_on:
-      - mongodb
-
-  frontend:
-    build: ./mern/frontend
-    ports:
-      - "5173:5173" 
-    networks:
-      - mern_network
-    environment:
-      REACT_APP_API_URL: http://backend:5050 
-  
-  
-  mongodb:
-    image: mongo:latest  
-    ports:
-      - "27018:27018"  
-    networks:
-      - mern_network
-    volumes:
-      - mongo-data:/data/db  
-
-
+      - frontend1
+      - frontend2
+      - backend1
+      - backend2
 
 networks:
   mern_network:
-    driver: bridge 
+    driver: bridge
 
 volumes:
   mongo-data:
-    driver: local  # Persist MongoDB data locally
-
+    driver: local
