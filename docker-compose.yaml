@@ -6,18 +6,22 @@ services:
     networks:
       - mern_network
     environment:
-      REACT_APP_API_URL: http://backend:5050
+      REACT_APP_API_URL: http://backend1:5050  # Use backend1 for frontend1
     depends_on:
       - backend1
+    ports:
+      - "5173:5173"  # Expose port 5173 for frontend1
 
   frontend2:
     build: ./mern/frontend
     networks:
       - mern_network
     environment:
-      REACT_APP_API_URL: http://backend:5050
+      REACT_APP_API_URL: http://backend2:5050  # Use backend2 for frontend2
     depends_on:
       - backend2
+    ports:
+      - "5174:5173"  # Expose port 5173 for frontend2 on host port 5174
 
   backend1:
     build: ./mern/backend
@@ -27,6 +31,8 @@ services:
       MONGO_URI: mongodb://mongo:27017/mydatabase
     depends_on:
       - mongodb
+    ports:
+      - "5050:5050"  # Expose port 5050 for backend1
 
   backend2:
     build: ./mern/backend
@@ -36,11 +42,13 @@ services:
       MONGO_URI: mongodb://mongo:27017/mydatabase
     depends_on:
       - mongodb
+    ports:
+      - "5051:5050"  # Expose port 5050 for backend2 on host port 5051
 
   mongodb:
     image: mongo:latest
     ports:
-      - "27017:27017"
+      - "27017:27017"  # Expose MongoDB port to the host
     networks:
       - mern_network
     volumes:
@@ -49,7 +57,7 @@ services:
   nginx:
     build: ./mern/nginx  # Build from the Dockerfile in ./nginx directory
     ports:
-      - "80:80"
+      - "80:80"  # Expose Nginx port 80 to the host
     networks:
       - mern_network
     depends_on:
