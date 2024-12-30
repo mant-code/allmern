@@ -1,7 +1,7 @@
 services:
 
   nginx:
-    build: ./nginx  # Build from the Dockerfile in ./nginx directory
+    build: ./mern/nginx  # Build from the Dockerfile in ./nginx directory
     ports:
       - "80:80"  # Expose port 80 for Nginx reverse proxy
     networks:
